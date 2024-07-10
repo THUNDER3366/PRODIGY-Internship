@@ -1,0 +1,44 @@
+from scapy.all import sniff, IFACES, conf, IP, TCP, UDP, Raw
+
+def list_interfaces():
+    print("Available network interfaces:")
+    interfaces = []
+    for iface in IFACES.data.values():
+        interfaces.append(iface)
+        print(f" - {iface.name} ({iface.description})")
+    return interfaces
+
+def packet_callback(packet):
+    if IP in packet:
+        ip_layer = packet[IP]
+        print(f"\n[+] New Packet: {ip_layer.src} -> {ip_layer.dst}")
+
+        if TCP in packet:
+            tcp_layer = packet[TCP]
+            print(f"    Protocol: TCP | Src Port: {tcp_layer.sport} -> Dst Port: {tcp_layer.dport}")
+        elif UDP in packet:
+            udp_layer = packet[UDP]
+            print(f"    Protocol: UDP | Src Port: {udp_layer.sport} -> Dst Port: {udp_layer.dport}")
+
+        if Raw in packet:
+            print(f"    Payload: {packet[Raw].load}")
+
+def start_sniffing(interface):
+    print(f"[*] Starting packet sniffing on {interface.name} ({interface.description})...")
+    sniff(iface=interface.name, prn=packet_callback, store=0)
+
+if __name__ == "__main__":
+    interfaces = list_interfaces()
+    if not interfaces:
+        print("No interfaces found. Make sure you have network interfaces available.")
+    else:
+        interface_name = input("Enter the interface to sniff on (name): ")
+        selected_interface = None
+        for iface in interfaces:
+            if iface.name == interface_name:
+                selected_interface = iface
+                break
+        if selected_interface:
+            start_sniffing(selected_interface)
+        else:
+            print(f"Interface '{interface_name}' not found or not supported.")
