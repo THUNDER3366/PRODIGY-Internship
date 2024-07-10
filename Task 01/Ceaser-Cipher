@@ -1,0 +1,49 @@
+def ceaser_cipher(text, shift, encrypt=True):
+    from string import ascii_lowercase, ascii_uppercase
+    
+    def shift_char(char, shift, alphabet):
+        """Shifts a character by the specified shift within the given alphabet."""
+        if char in alphabet:
+            idx = alphabet.index(char)
+            new_idx = (idx + shift) % len(alphabet)
+            return alphabet[new_idx]
+        return char
+
+    if not encrypt:
+        shift = -shift
+
+    encrypted_text = []
+
+    for char in text:
+        if char.islower():
+            encrypted_text.append(shift_char(char, shift, ascii_lowercase))
+        elif char.isupper():
+            encrypted_text.append(shift_char(char, shift, ascii_uppercase))
+        else:
+            encrypted_text.append(char)
+
+    return ''.join(encrypted_text)
+
+
+while True:
+    print("Choose an option:")
+    print("1: Encrypt")
+    print("2: Decrypt")
+    print("3: Exit")
+    choice = input("Enter your choice: ")
+    
+    if choice == '1' or choice == '2':
+        message = input("Enter the message: ")
+        shift_value = int(input("Enter the shift value: "))
+        if choice == '1':
+            encrypted_message = ceaser_cipher(message, shift_value, encrypt=True)
+            print(f"Encrypted Message: {encrypted_message}")
+        else:
+            decrypted_message = ceaser_cipher(message, shift_value, encrypt=False)
+            print(f"Decrypted Message: {decrypted_message}")
+    elif choice == '3':
+        print("Exiting the program.")
+        break
+    else:
+        print("Invalid choice. Please enter 1, 2, or 3.")
+
