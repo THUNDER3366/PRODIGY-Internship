@@ -1,0 +1,33 @@
+from scapy.all import sniff, IFACES, conf, IP, TCP, UDP, Raw
+
+def list_interfaces():
+    print("Available network interfaces:")
+    interfaces = []
+    for iface in IFACES.data.values():
+        interfaces.append(iface)
+        print(f" - {iface.name} ({iface.description})")
+    return interfaces
+
+def packet_callback(packet):
+    if IP in packet:
+        ip_layer = packet[IP]
+        print(f"\n[+] New Packet: {ip_layer.src} -> {ip_layer.dst}")
+
+        if TCP in packet:
+            tcp_layer = packet[TCP]
+            print(f"    Protocol: TCP | Src Port: {tcp_layer.sport} -> Dst Port: {tcp_layer.dport}")
+        elif UDP in packet:
+            udp_layer = packet[UDP]
+            print(f"    Protocol: UDP | Src Port: {udp_layer.sport} -> Dst Port: {udp_layer.dport}")
+
+        if Raw in packet:
+            print(f"    Payload: {packet[Raw].load}")
+
+def start_sniffing(interface):
+    print(f"[*] Starting packet sniffing on {interface}...")
+    sniff(iface=interface, prn=packet_callback, store=0)
+
+if __name__ == "__main__":
+    interfaces = list_interfaces()
+    interface = input("Enter the interface to sniff on (name or description): ")
+    start_sniffing(interface)
