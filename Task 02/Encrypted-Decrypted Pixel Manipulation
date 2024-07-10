@@ -1,0 +1,31 @@
+from PIL import Image
+def encrypt_image(input_path,output_path,key):
+    img = Image.open(input_path)
+    pixel=img.load()
+    width,height=img.size
+    for i in range(width):
+        for j in range(height):
+            r,g,b=pixel[i,j]
+            encrypted_pixel=(b,g,r)
+            pixel[i,j]=encrypted_pixel
+    img.save(output_path)
+    print("Image encrpyted sucessfully!")
+
+def decrypt_image(input_path,output_path,key):
+    img = Image.open(input_path)
+    pixel=img.load()
+    width,height=img.size
+    for i in range(width):
+        for j in range(height):
+            r,g,b=pixel[i,j]
+            decrypted_pixel=(b,g,r)
+            pixel[i,j]=decrypted_pixel
+    img.save(output_path) 
+    print("Image decrypted sucessfully!")
+          
+input_image= r"C:\Users\hetdi\OneDrive\Documents\CYBER\SEM 6\Prodigy_Intership\Task 2\image.jpg" # Change this to your input image path
+encrypted_image= r"C:\Users\hetdi\OneDrive\Documents\CYBER\SEM 6\Prodigy_Intership\Task 2\encrypted.jpg" # Change this to your desired encrypted image path
+decrypted_image=r"C:\Users\hetdi\OneDrive\Documents\CYBER\SEM 6\Prodigy_Intership\Task 2\decrypted.jpg" # Change this to your desired decrypted image path
+
+encrypt_image(input_image,encrypted_image, key=None)
+decrypt_image(encrypted_image,decrypted_image, key=None)
